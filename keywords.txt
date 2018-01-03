@@ -1,0 +1,85 @@
+#######################################
+# Syntax Coloring Map For <AGI>
+####################################### 
+# Class (KEYWORD1)
+#######################################
+
+XYscope KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################	
+
+someMethod		KEYWORD2
+someFunction  	KEYWORD2
+
+begin	KEYWORD2
+
+initiateDacDma	KEYWORD2
+
+dacHandler KEYWORD2
+
+setScreenSaveSecs	KEYWORD2
+getScreenSaveSecs	KEYWORD2
+
+setDmaClockRate	KEYWORD2
+
+
+setRefreshPeriodUs	KEYWORD2
+autoSetRefreshTime	KEYWORD2
+getRefreshPeriodUs	KEYWORD2
+plotStart	KEYWORD2
+plotClear	KEYWORD2
+plotEnd	KEYWORD2
+setGraphicsIntensity	KEYWORD2
+getGraphicsIntensity	KEYWORD2
+
+getGraphDensity	KEYWORD2
+setTextIntensity	KEYWORD2
+getTextIntensity	KEYWORD2
+getTextDensity	KEYWORD2
+
+plotPoint	KEYWORD2
+plotLine	KEYWORD2
+plotRectangle	KEYWORD2
+plotCircle	KEYWORD2
+plotCircleBres	KEYWORD2
+plotEllipse	KEYWORD2
+plotEllipseBres	KEYWORD2
+	
+plotChar	KEYWORD2
+plotCharUL	KEYWORD2
+
+plotArduinoLogo	KEYWORD2
+
+	
+setFontSpacing	KEYWORD2
+getFontSpacing	KEYWORD2
+
+printSetup	KEYWORD2
+printUnderline	KEYWORD2
+print	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+ 
+someConstant	LITERAL1
+prop	LITERAL1
+monoTight	LITERAL1
+mono	LITERAL1
+monoNorm	LITERAL1
+monoWide	LITERAL1
+crtBlankingPin	LITERAL1
+MaxArraySize	LITERAL1
+arc0	LITERAL1
+arc1	LITERAL1
+arc2	LITERAL1
+arc3	LITERAL1
+arc4	LITERAL1
+arc5	LITERAL1
+arc6	LITERAL1
+arc7	LITERAL1
+CrtMinRefresh_ms	LITERAL1
+X_flag	LITERAL1
+Y_flag	LITERAL1
