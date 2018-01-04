@@ -19,6 +19,25 @@ XYscope::XYscope() {
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //
 
+float XYscope::getLibRev(void){
+	//	Routine to get XYscope Library Revision Level using Semantic scheme (Major_Rev.Minor_Rev.Patch_Rev0
+	//		Note: PatchRev is NOT USED; library revision is returned as a single floating point value.
+	//
+	//	Calling parameters: NONE
+	//
+	//	Returns:
+	//		LibRevision as a FLOATING POINT variable. WHOLE portion = MAJOR REV, FRACTIONAL portion = MINOR REV.
+	//
+	//	20171012 Ver 0.0	E.Andrews	First cut --- Initialize Lib Rev to ver 0.0
+
+	// Here's where we define Major and Minor Rev Levels; Reset these values whenver a lib rev is completed.
+	_libMajorRev=1.;			//Bump MAJOR value wherever incompatible API changes are made
+	_libMinorRev=.0;			//Bump MINOR value whenever functionality is added (in a backwards compatible fashion occurs)
+	_libPatchRev=0;			//NOT USED (LibPatchRev not used in this application)
+	_libRev = _libMajorRev + _libMinorRev +.005;	//Bias up by .005 to improve float to text conversion
+	return _libRev;		//Combine and return the composite value.
+}
+
 void XYscope::setGraphicsIntensity(short GraphBright) {
 	//	Routine to set graphics "intensity" (aka: brightness) for all graphics operations
 	//
@@ -179,7 +198,7 @@ void XYscope::plotEnd() {
 	//	Returns: NOTHING
 	//
 	//	20170705 Ver 0.1	E.Andrews	First cut of simplified routine (no passed parameters)
-	short LastX = X_flag, LastY = Y_flag;
+
 
 	if (XYlistEnd > 0) {
 
@@ -640,6 +659,7 @@ void XYscope::plotCircle(int xc, int yc, int r, uint8_t arcSegment) {
 }
 
 void XYscope::plotCircleBres(int xc, int yc, int r, uint8_t arcSegment) {
+	/*
 	//	Routine for CIRCLE plotting.  Basic algorithm implementation/starting code base from:
 	//	https://sites.google.com/site/ruslancray/lab/projects/bresenhamscircleellipsedrawingalgorithm/bresenham-s-circle-ellipse-drawing-algorithm
 	//
@@ -678,6 +698,7 @@ void XYscope::plotCircleBres(int xc, int yc, int r, uint8_t arcSegment) {
 	//	20170427 Ver 1.0	E.Andrews	Rework to improve shape
 	//	20170617 Ver 0.2	E.Andrews	Simplify Routine Call by eliminating need to pass the index pointer
 	//
+	*/
 	plotErr = 0;
 	int SkipCount = 0;
 	//==========Check to be sure that the figure is fully on-screen
@@ -1113,14 +1134,14 @@ void XYscope::plotEllipse(int xc, int yc, int xr, int yr, uint8_t arcSegment) {
  //					Bit = 1 means Draw arc segment, Bit = 0 means do NOT draw arc segment (Skip it!)
  //					Any combination from 1 to 8 segments may be spec'd.
 
- 1  |	 2
- \	  |   /
- 0  \  |  /  3
- -------+-------
- 7  /  |  \   4
- /   |   \
-						   6  |  5
-
+ //   \ 1 | 2 /
+ //    \  |  /
+ //   0 \ | / 3
+ //  -----+-------
+ //   7  /|\  4
+ //     / | \
+ //    /6 | 5\
+ //
  //
  //	Returns: NOTHING
  //
@@ -1274,7 +1295,7 @@ void XYscope::plotArduinoLogo(int& charX, int& charY, int& charHt) {
 	if (getFontSpacing() != mono)
 		Tx = Tx + ((charHt / 8) * .75);	//Starting location for "Ardu.." text for PROPORTIONAL FONT
 	printSetup(Tx, Ty, charHt / 5);
-	print("ARDUINO DUE");
+	print((char *)"ARDUINO DUE");
 
 	return;
 }
@@ -1376,13 +1397,13 @@ void XYscope::plotChar(char c, int& charX, int& charY, int& charHt) {
 	while (EndOfPlot == 0) {
 		PlotCount--;
 		charRomIndex++;
-		//Retrieve OpCode
+		//Initialize Retrieve OpCode
 		uint8_t OC = 0, EOC = 0, P1a = 0, P1b = 0, P2a = 0, P2b = 0, P3 = 0;
-
+		EOC=EOC;
 		//Unpack OPCODE, EndOfChar Flag, P1,P2,P3
 		OC = DigitFont[charRomIndex].Opcode;	//Retrieve OPCODE from FontROM
 		if ((OC & 0x80) != 0)
-			EndOfPlot++;//Test to see if End_of_Charaacter (EOC) is set; end processing of so
+			EndOfPlot++;//Test to see if End_of_Charaacter (EOC) is set; end processing if so
 		OC = OC & 0x0f;						//Strip down to just lower 4 bits
 		P1b = DigitFont[charRomIndex].P1;//Retrieve P1 from FontROM and unpack 
 		P1a = P1b >> 4;
@@ -1460,7 +1481,7 @@ void XYscope::plotChar(char c, int& charX, int& charY, int& charHt) {
 
 		}
 
-		int ix = XYlistEnd;
+
 		switch (OC) {
 		case NOP:	//Do nothing
 			if (printDump)
@@ -1672,7 +1693,7 @@ void XYscope::printUnderline(int nPlaces) {
 	//	201703610 Ver 0.0	E.Andrews	First cut
 	//	201703718 Ver 1.0	E.Andrews	Update to work with UNDERLINE flag
 	//
-	for (nPlaces; nPlaces > 0; nPlaces--)
+	for (int n=nPlaces; n > 0; n--)
 		;
 	{
 		plotChar('_', charX, charY, charSize);
@@ -1818,7 +1839,7 @@ void XYscope::print(float number, int placesToPrint = 2, bool UL_Flag = false) {
 
 	//check and bound placesToPrint to a reasonable number
 	if (placesToPrint < 0 || placesToPrint > 10)
-		placesToPrint = 2;//Reset placesToPrint to reasonable number if it's out of bounds!
+		placesToPrint = 2;	//Reset placesToPrint to reasonable number if it's out of bounds!
 
 	if (number < 0) {
 		//Serial.print("-");
@@ -1836,7 +1857,7 @@ void XYscope::print(float number, int placesToPrint = 2, bool UL_Flag = false) {
 	//intNumber=int(number);	//Capture an integer version of the floating point number
 
 	//Serial.println("  Figuring out how many digits to print...");
-	while ((number / (pow(10, digitCount))) > 9.99999999) {
+	while ((number / (pow(10, digitCount))) > 9.9999999999) {
 		//Serial.print(digitCount);Serial.print("=");Serial.print(pow(10,digitCount)); Serial.print( " : "); Serial.print((number/pow(10,digitCount))); Serial.print("_");
 		digitCount++;
 	}
@@ -1871,16 +1892,18 @@ void XYscope::print(float number, int placesToPrint = 2, bool UL_Flag = false) {
 
 	while (digitCount >= 0) {
 		number = abs(number);	//disect and print it as a positive number...
-		int digitToPrint = number / pow(10, digitCount);
+		int digitToPrint = int(number / pow(10, digitCount));
+		//int digitToPrint=digitToPrintNoRound;
+		//int digitToPrintRoundUp = int((number+.5) / pow(10, digitCount));
+		//if (digitCount==0) digitToPrint = digitToPrintRoundUp;
 		char charToPrint = '0' + digitToPrint;
-		if (UL_Flag)
-			plotCharUL(charToPrint, charX, charY, charSize);
-		else
-			plotChar(charToPrint, charX, charY, charSize);//Convert digit to a single ASCII character and print it!
+		if (UL_Flag) plotCharUL(charToPrint, charX, charY, charSize);
+		else plotChar(charToPrint, charX, charY, charSize);//Convert digit to a single ASCII character and print it!
 		//Serial.print(digitToPrint); Serial.print("_");
 		//Serial.print("[");
 		//Serial.print(charToPrint);Serial.Print("]  ");
-
+		
+		//Now shift by power of 10
 		number = number - digitToPrint * pow(10, digitCount);
 		digitCount--;
 	}
@@ -2389,6 +2412,9 @@ void XYscope::begin(uint32_t dmaFreqHz) {
 	//	20170405 Ver 0.0	E.Andrews	First cut
 	//	20170828 Ver 1.0	E.Andrews	Remove diag "print" statements and code/comment clean up
 	//
+
+	float temp = getLibRev();	//Call revision routine to properly set the (global variables in case someone uses them)
+	temp=temp;
 
 	// Initialize the pin mode for BLANKING PIN and set default start up value=HIGH
 	pinMode(crtBlankingPin, OUTPUT);

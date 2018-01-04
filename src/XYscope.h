@@ -31,6 +31,7 @@ class XYscope{
 	//Methods
 
 	//Setup and Control Routines
+	float getLibRev(void);								//Retrieves the revision level of the active library
 	void begin(uint32_t dmaFreqHz=800000);				//Initializes and enables DAC, DAC Counter Timer, DMA controller, Refresh Counter Timer
 	void initiateDacDma(void);							//NOT A USER ROUTINE: Fires off a DacDMA transfer
 	void dacHandler(void);								//NOT A USER ROUTINE: This is link to DAC_TRANSFER_COMPLETED interrupt
@@ -102,6 +103,8 @@ class XYscope{
 	//========================================
 	//Global Variables & Constants
 	//========================================
+
+
 	static const uint8_t crtBlankingPin=3;		//CRT_Blanking pin (1=CRT_OFF, 0=CRT_ON)
 	uint16_t frontPorchBlankCount=100;			//Calculated and set by setDmaClockRate(int dmaClkFreq); Used to define the duration before CRT unblanks & displays starts at START of DMA transfer
 	uint16_t backPorchBlankCount=100;			//Calculated and set by setDmaClockRate(int dmaClkFreq); Used to define the duration before CRT blanking starts and display ENDS after the completion of a DMA transfer
@@ -145,7 +148,10 @@ class XYscope{
 	};
 	pointList XY_List[MaxArraySize];	//This reserves & defines the RAM allocated for the XY_List.  Actual value of usable space is set by variable MaxBuffSize
 
-
+	//Define Test Justification Flags
+	static const uint8_t LtJustify=0;	//Left Justified Text	(default)
+	static const uint8_t RtJustify=1;	//Right Justified Text
+	static const uint8_t CtrJustify=2;	//Center justified Text
 
 	//Define partial-circle/partial-ellipse "Arc-Codes"
 	static const uint8_t arc0=1;
@@ -195,10 +201,20 @@ class XYscope{
 	int _textDensity;		//value calculated by/set by call to SetTextIntensity(int brightness)
 	int _textBrightness;	//value that is set by call to SetGraphicsIntensity(int graphbrightness)
 
-	long _crtOffTOD_ms;		//Screen save time in ms; Zero means screen saver disabled.
-	long _screenOnTime_ms;	//TOD (ms) when Screen should next be blanked;
-							//Define Font Spacing variable
+	unsigned long _crtOffTOD_ms;	//Screen save time in ms; Zero means screen saver disabled.
+	unsigned long _screenOnTime_ms;	//TOD (ms) when Screen should next be blanked;
+
+	//Define Font Spacing variable
 	short _fontSpacing=8;
+	uint8_t	_fontJustifyFlag;	//Global varialbe to define justification
+	uint8_t	_fontJustifyEnab;	//0=disable justification (default to LEFT); !0=enable justification as set by _fontJustifyFlag
+
+
+	//Define XYscope Library Version using Semantic scheme (Major_Rev, Minor_Rev, Patch_Rev)
+	float _libMajorRev=0;	//Valid range: 0-99
+	float _libMinorRev=0;	//Valid range: .00-.99
+	short _libPatchRev=0;		//Valid range: 0-99
+	float _libRev=0.0;
 
 };
 #endif // XYscope
